@@ -1,0 +1,11 @@
+version: '3'
+
+services: # 컨테이너 정의(컨테이너의 집합체를 보주로 서비스라고 함)
+    app:
+        container_name: profile_app
+        image: profiles_local
+        restart: always
+        command: streamlit run app/main.py --server.port 8501
+        ports:
+            - 8501:8501
+        network_mode: "host"  #컨테이너가 아닌 host를 참조할때 (ex, db)

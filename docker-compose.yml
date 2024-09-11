@@ -1,0 +1,42 @@
+version: '3'
+
+services: # 컨테이너 정의
+    mysql:
+        container_name: mysql_db
+        image: mysql:latest  # 이미지 이름을 명시해서 지정 (Dockerfile이 없어도 실행 가능)
+        restart: always
+        volumes: 
+            - mysql_volume:/var/lib/mysql
+        environment:   # 환경 변수 설정
+            MYSQL_ROOT_PASSWORD: hkc!
+            MYSQL_DATABASE: members
+            MYSQL_CHARSET: utf8mb4
+            MYSQL_COLLATION: utf8mb4_unicode_ci
+        ports:    
+            - "3306:3306"  # 호스트의 3306 포트를 컨테이너의 3306 포트로 매핑
+    app:
+        depends_on:
+            - mysql
+        container_name: profile_app
+        image: profiles:latest  # 개발pc에서 dockerfile로 만든 image
+        privileged: true  # python run time error 방지용(서버docker버전이 낮아서 발생하는 듯)
+        restart: always
+        # command: streamlit run Main.py --server.port 8502
+        volumes:
+            - app_volume:/usr/src/app
+        environment:   # 환경 변수 설정
+            db_dialect: mysql
+            db_host: mysql_db
+            db_username: root
+            db_password: hkc!
+            db_name: members
+        ports:
+            - 5001:8502
+
+volumes:
+    mysql_volume:
+        external: true   #기존 볼륨을 사용
+    app_volume:
+        external: false
+      
+    

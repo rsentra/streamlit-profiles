@@ -1,0 +1,51 @@
+---- mysql 도커 컨테이너 생성--------------
+도커 컨테이너 진입(db라는 이름의 컨테이너 예시)
+docker exec -it db bash
+mysql진입
+mysql -u root -p
+show variables like 'lower_case_table_names'
+
+docket bash안에 vi 설치
+https://javacpro.tistory.com/75
+
+mysql에 대소문자 구분 옵션 변경
+vi /etc/mysql/my.cnf
+
+vi /etc/mysql/my.cnf
+lower_case_table_names=1 이면 구분안함, 0이면 구분함
+
+
+볼륨생성
+docker volume create mysql_volume
+
+컨테이너 실행: 위에서 생성한 볼륨을 영속적으로 사용
+docker run  --name mysql_db -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=hkc! -v mysql_volume:/var/lib/mysql mysql:latest
+
+docker exec -it mysql_db bash
+
+
+
+------ streamt_profile: 프로필관리 소스 이미지 생성------
+#서버db(mysql) connect
+docker build -t profiles .
+
+#로컬db(postgresql) connect
+docker build -t profiles_local .
+
+--컨테이너 실행
+사용법: 
+1) 환경변수 x
+docker run -it -d -p 5001:8502 --name profile_local profiles_local
+2) 환경변수 o: db접속정보
+docker run -it -d -p 5001:8502 -e db_dialect=mysql -e db_host=72.16.0.121:3306 -e db_name=members -e db_username=root -e db_password=hkc! --name profile_local profiles_local
+
+docker run -it -d -p 5001:8502 --privileged --name profiles_srv profiles
+
+docker run -it -d -p 5001:8502 --privileged --name profile_mgmt profiles
+
+
+-- docker 이미지크기 확인
+docker history --human --format "{{.CreatedBy}}: {{.Size}}" profiles
+
+--미사용 볼륨 제거
+docker volume prune

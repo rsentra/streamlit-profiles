@@ -1,0 +1,28 @@
+version: '3'
+
+services: # 컨테이너 정의(컨테이너의 집합체)
+    app:
+        container_name: profile_app
+        image: profiles:latest  # 개발pc에서 dockerfile로 만든 image
+        restart: always
+        build: app/
+        command: streamlit run app/main.py --server.port 8501
+        volumes:
+            - ./:/usr/src/app
+        ports:
+            - 8501:8501
+
+    mysql:
+        container_name: mysql_db
+        image: mysql:latest  # 이미지 이름을 명시해서 지정 (Dockerfile이 없어도 실행 가능)
+        restart: always
+        environment:   # 환경 변수 설정
+            MYSQL_ROOT_PASSWORD: hkc!
+            MYSQL_DATABASE: members
+            MYSQL_CHARSET: utf8mb4
+            MYSQL_COLLATION: utf8mb4_unicode_ci
+        ports:    
+            - "3306:3306"  # 호스트의 3307 포트를 컨테이너의 3306 포트로 매핑
+    volumes:
+      - ./mysql_volumne/:/var/lib/mysql
+    

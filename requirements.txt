@@ -1,0 +1,11 @@
+streamlit
+streamlit-aggrid
+streamlit-option-menu
+st_pages
+pandas
+psycopg2-binary
+pygwalker
+plotly
+python-pptx
+PyMySQL
+openpyxl
