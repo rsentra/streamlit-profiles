@@ -1,7 +1,11 @@
 .ipynb_checkpoints/
 __pycache__/
-pages1/
-poppler-23.11.0/
+.vscode/
+customFonts/
+.streamlit/secrets.toml
+*.pptx
+*.sql
+*.tar
 **/*.xlsx
 **/*.csv
 **/*.html
