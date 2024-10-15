@@ -373,7 +373,10 @@ def update_process(upd_df):
     if res:
         print('update count: ', cnt)
     
-    st.info("수정완료")
+    if res:
+        st.info("수정완료")
+    else:
+        st.error("수정 실패..날짜 데이터 오류이므로 날짜 데이터를 입력바람")
     return True
 
 def delete_process(upd_df):

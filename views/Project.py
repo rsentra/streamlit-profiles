@@ -5,8 +5,8 @@ from models import database  as db
 from libs import utils as util
 from st_aggrid import AgGrid, GridUpdateMode, JsCode,ColumnsAutoSizeMode,DataReturnMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
-import pygwalker as pyg
-from pygwalker.api.streamlit import StreamlitRenderer
+# import pygwalker as pyg
+# from pygwalker.api.streamlit import StreamlitRenderer
 import streamlit.components.v1 as components
 
 from libs.utils import today

@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 import pandas as pd
-import psycopg2
+# import psycopg2
 import pymysql
 
 def get_conn_postgres_st():
@@ -68,7 +68,7 @@ def get_data_to_df(sql):
 
         conn.close()
 
-    except (Exception, psycopg2.DatabaseError) as ex:
+    except (Exception) as ex:
         print('error message :', ex)
         conn.close()
         return None
@@ -125,7 +125,7 @@ def insert_to_table(schema , table , data, mode='insert', repl_cond=None, get_se
 
         conn.close()
 
-    except (Exception, psycopg2.DatabaseError) as ex:
+    except (Exception) as ex:
         conn.rollback()
         conn.close()
         print("Error: " , ex)
@@ -163,7 +163,7 @@ def insert_df_to_table(df, table, mode='insert', repl_cond=None):
 
             conn.close()
 
-        except (Exception, psycopg2.DatabaseError) as error:
+        except (Exception) as error:
             print("Error: %s" % error)
             conn.rollback()
             conn.close()
@@ -175,8 +175,9 @@ def update_df_to_table(df_u, table, u_key_cols):
     ''' df를 받아서 업데이트함 : df, 테이블명, unique key컬럼 '''
     temp = df_u.columns
     # key컬럼을 제외한 cols를 생성
-    temp = list(filter(lambda x: x not in u_key_cols, temp))
-    cols = ','.join(list(temp))
+    # temp = list(filter(lambda x: x not in u_key_cols, temp))
+    # cols = ','.join(list(temp))
+    cols = list(filter(lambda x: x not in u_key_cols, temp))
     succ_cnt = 0
     try:
         conn = get_conn_postgres()
@@ -184,15 +185,22 @@ def update_df_to_table(df_u, table, u_key_cols):
         # df 개수만큼 반복
         for i, row in df_u.iterrows():
             #업데이트할 컬럼값을 생성 from df
-            vals = "'" + "','".join([str(t) for t in row[cols.split(',')]]) + "'" 
-            u_key_vals = list(row[u_key_cols])
+            # vals = "'" + "','".join([str(t) for t in row[cols.split(',')]]) + "'" 
+            # u_key_vals = list(row[u_key_cols])
+            vals = [ str(t) for t in row[cols]]
+            u_key_vals = row[u_key_cols]
+
             # update query생성
-            query = f"update {table} SET ({cols}) = ({ vals })  " 
+            query = f"update {table} SET  " 
+            for x, y in zip(cols, vals):
+                query +=  f"{x} = '{y}' ,"
+            query = query[:-1]
+
             where = 'where '
             for x,y in zip (u_key_cols,u_key_vals):
                 where += f"{x} = '{y}'  and "
             query = query + where.rstrip(' and ')
-            # print(i,':',query)
+            print(i,':',query)
             succ_cnt += 1
     
             with conn.cursor() as cursor:
@@ -201,7 +209,7 @@ def update_df_to_table(df_u, table, u_key_cols):
         conn.commit()
         conn.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception) as error:
             print("Error: %s" % error)
             conn.rollback()
             conn.close()
@@ -221,7 +229,7 @@ def execute_sql(query):
         conn.commit()
         conn.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception) as error:
             print("Error: %s" % error)
             conn.rollback()
             conn.close()
